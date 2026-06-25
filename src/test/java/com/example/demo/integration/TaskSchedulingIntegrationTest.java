@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -47,7 +48,9 @@ class TaskSchedulingIntegrationTest {
         ));
 
         mvc.perform(post("/tasks").contentType(MediaType.APPLICATION_JSON).content(body))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.createdAt").exists())
+                .andExpect(jsonPath("$.createdAt").isNotEmpty());
 
         CapturingTaskMessagePublisher capturing = (CapturingTaskMessagePublisher) publisher;
         await().atMost(5, TimeUnit.SECONDS)
