@@ -84,4 +84,7 @@ public interface TaskRepository extends JpaRepository<Task, String> {
     List<Task> findDueForBackfill(@Param("cutoff") Instant cutoff,
                                   @Param("status") TaskStatus status,
                                   Pageable pageable);
+
+    org.springframework.data.domain.Page<Task> findByStatus(TaskStatus status,
+                                                            org.springframework.data.domain.Pageable pageable);
 }
