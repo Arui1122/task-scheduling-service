@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Converter;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -28,7 +29,7 @@ public class Task {
     private Instant executeAt;
 
     @Column(name = "payload", nullable = false)
-    @jakarta.persistence.Convert(converter = JsonMapConverter.class)
+    @Convert(converter = JsonMapConverter.class)
     private Map<String, Object> payload;
 
     @Enumerated(EnumType.STRING)
@@ -42,7 +43,7 @@ public class Task {
     @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
     private Instant createdAt;
 
-    @Column(name = "updated_at", nullable = false, insertable = false)
+    @Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
     private Instant updatedAt;
 
     @Column(name = "triggered_at")
