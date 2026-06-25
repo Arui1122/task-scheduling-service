@@ -1,6 +1,6 @@
 package com.example.demo.mq;
 
-import com.example.demo.domain.TaskMessage;
+import com.example.demo.model.TaskMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;

@@ -1,7 +1,7 @@
 package com.example.demo.repository;
 
-import com.example.demo.domain.Task;
-import com.example.demo.domain.TaskStatus;
+import com.example.demo.model.Task;
+import com.example.demo.model.TaskStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

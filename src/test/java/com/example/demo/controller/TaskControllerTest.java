@@ -1,7 +1,7 @@
-package com.example.demo.web;
+package com.example.demo.controller;
 
-import com.example.demo.domain.Task;
-import com.example.demo.domain.TaskStatus;
+import com.example.demo.model.Task;
+import com.example.demo.model.TaskStatus;
 import com.example.demo.service.TaskService;
 import com.example.demo.service.exception.IllegalTaskStateException;
 import com.example.demo.service.exception.TaskAlreadyExistsException;

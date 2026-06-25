@@ -2,8 +2,8 @@ package com.example.demo.service;
 
 import com.example.demo.delayqueue.DelayQueue;
 import com.example.demo.delayqueue.InMemoryDelayQueue;
-import com.example.demo.domain.Task;
-import com.example.demo.domain.TaskStatus;
+import com.example.demo.model.Task;
+import com.example.demo.model.TaskStatus;
 import com.example.demo.repository.TaskRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

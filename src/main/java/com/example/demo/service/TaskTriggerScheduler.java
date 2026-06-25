@@ -1,8 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.delayqueue.DelayQueue;
-import com.example.demo.domain.Task;
-import com.example.demo.domain.TaskStatus;
+import com.example.demo.model.Task;
+import com.example.demo.model.TaskStatus;
 import com.example.demo.repository.TaskRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

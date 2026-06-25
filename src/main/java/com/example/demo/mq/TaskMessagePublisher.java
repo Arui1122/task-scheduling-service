@@ -1,6 +1,6 @@
 package com.example.demo.mq;
 
-import com.example.demo.domain.TaskMessage;
+import com.example.demo.model.TaskMessage;
 
 public interface TaskMessagePublisher {
     /**

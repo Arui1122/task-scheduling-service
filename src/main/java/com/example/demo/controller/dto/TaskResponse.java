@@ -1,7 +1,7 @@
-package com.example.demo.web.dto;
+package com.example.demo.controller.dto;
 
-import com.example.demo.domain.Task;
-import com.example.demo.domain.TaskStatus;
+import com.example.demo.model.Task;
+import com.example.demo.model.TaskStatus;
 
 import java.time.Instant;
 import java.util.Map;

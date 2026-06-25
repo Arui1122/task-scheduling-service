@@ -1,10 +1,10 @@
-package com.example.demo.web;
+package com.example.demo.controller;
 
-import com.example.demo.domain.Task;
-import com.example.demo.domain.TaskStatus;
+import com.example.demo.model.Task;
+import com.example.demo.model.TaskStatus;
 import com.example.demo.service.TaskService;
-import com.example.demo.web.dto.CreateTaskRequest;
-import com.example.demo.web.dto.TaskResponse;
+import com.example.demo.controller.dto.CreateTaskRequest;
+import com.example.demo.controller.dto.TaskResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

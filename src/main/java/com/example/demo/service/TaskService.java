@@ -1,9 +1,9 @@
 package com.example.demo.service;
 
 import com.example.demo.delayqueue.DelayQueue;
-import com.example.demo.domain.Task;
-import com.example.demo.domain.TaskMessage;
-import com.example.demo.domain.TaskStatus;
+import com.example.demo.model.Task;
+import com.example.demo.model.TaskMessage;
+import com.example.demo.model.TaskStatus;
 import com.example.demo.mq.MessagePublishException;
 import com.example.demo.mq.TaskMessagePublisher;
 import com.example.demo.repository.TaskRepository;

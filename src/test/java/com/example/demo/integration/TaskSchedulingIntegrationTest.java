@@ -1,7 +1,7 @@
 package com.example.demo.integration;
 
-import com.example.demo.domain.TaskMessage;
-import com.example.demo.domain.TaskStatus;
+import com.example.demo.model.TaskMessage;
+import com.example.demo.model.TaskStatus;
 import com.example.demo.mq.CapturingTaskMessagePublisher;
 import com.example.demo.mq.TaskMessagePublisher;
 import com.example.demo.repository.TaskRepository;

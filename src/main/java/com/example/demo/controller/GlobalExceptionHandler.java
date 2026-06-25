@@ -1,9 +1,9 @@
-package com.example.demo.web;
+package com.example.demo.controller;
 
 import com.example.demo.service.exception.IllegalTaskStateException;
 import com.example.demo.service.exception.TaskAlreadyExistsException;
 import com.example.demo.service.exception.TaskNotFoundException;
-import com.example.demo.web.dto.ErrorResponse;
+import com.example.demo.controller.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;

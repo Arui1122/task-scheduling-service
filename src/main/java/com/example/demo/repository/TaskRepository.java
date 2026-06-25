@@ -1,7 +1,7 @@
 package com.example.demo.repository;
 
-import com.example.demo.domain.Task;
-import com.example.demo.domain.TaskStatus;
+import com.example.demo.model.Task;
+import com.example.demo.model.TaskStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -25,12 +25,12 @@ public interface TaskRepository extends JpaRepository<Task, String> {
     @Transactional
     @Query("""
            update Task t
-              set t.status = com.example.demo.domain.TaskStatus.TRIGGERED,
+              set t.status = com.example.demo.model.TaskStatus.TRIGGERED,
                   t.triggeredAt = :triggeredAt,
                   t.version = t.version + 1
             where t.taskId = :taskId
               and t.version = :expectedVersion
-              and t.status = com.example.demo.domain.TaskStatus.PENDING
+              and t.status = com.example.demo.model.TaskStatus.PENDING
            """)
     int markTriggered(@Param("taskId") String taskId,
                       @Param("expectedVersion") Long expectedVersion,
@@ -45,11 +45,11 @@ public interface TaskRepository extends JpaRepository<Task, String> {
     @Transactional
     @Query("""
            update Task t
-              set t.status = com.example.demo.domain.TaskStatus.PENDING,
+              set t.status = com.example.demo.model.TaskStatus.PENDING,
                   t.triggeredAt = null,
                   t.version = t.version + 1
             where t.taskId = :taskId
-              and t.status = com.example.demo.domain.TaskStatus.TRIGGERED
+              and t.status = com.example.demo.model.TaskStatus.TRIGGERED
            """)
     int revertToPending(@Param("taskId") String taskId);
 
@@ -62,11 +62,11 @@ public interface TaskRepository extends JpaRepository<Task, String> {
     @Transactional
     @Query("""
            update Task t
-              set t.status = com.example.demo.domain.TaskStatus.CANCELLED,
+              set t.status = com.example.demo.model.TaskStatus.CANCELLED,
                   t.version = t.version + 1
             where t.taskId = :taskId
               and t.version = :expectedVersion
-              and t.status = com.example.demo.domain.TaskStatus.PENDING
+              and t.status = com.example.demo.model.TaskStatus.PENDING
            """)
     int cancelIfPending(@Param("taskId") String taskId,
                         @Param("expectedVersion") Long expectedVersion);
