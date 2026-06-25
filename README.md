@@ -164,3 +164,37 @@ Please submit a `public Github repository` that includes:
 Good luck!
 
 ---
+
+## 🏗️ Design & Implementation
+
+### Stack
+- Java 21 + Spring Boot 3.5.3
+- Spring Data JPA (MySQL 8) + Spring Data Redis + raw `rocketmq-client 5.3.2` (legacy TCP API)
+- Springdoc-OpenAPI (`/swagger-ui.html`) + Spring Actuator + Micrometer Prometheus (`/actuator/prometheus`)
+
+### Architecture
+MySQL is the Source of Truth. Redis ZSet (score = `executeAt` epoch ms) is the primary delay-queue driver — the scheduler pulls due ids every second. A second `@Scheduled` loop scans MySQL every 30 s to backfill any tasks Redis lost. Both paths converge on a single CAS update — `UPDATE ... WHERE version=? AND status='PENDING'` — which guarantees only one instance publishes a given task, with no distributed lock required.
+
+### Delivery semantics
+At-least-once. The CAS succeeds, then MQ is published. If the publish fails the CAS is reverted to PENDING and the next tick retries. Consumers must dedupe by `taskId` (standard RocketMQ contract).
+
+### Module layout
+```
+com.example.demo
+├── domain/         Task entity, TaskStatus, TaskMessage
+├── repository/     Spring Data JPA + CAS @Modifying queries
+├── delayqueue/     DelayQueue interface + RedisDelayQueue impl
+├── mq/             TaskMessagePublisher interface + RocketMQ impl
+├── service/        TaskService + TaskTriggerScheduler
+├── web/            TaskController + GlobalExceptionHandler + DTOs
+└── config/         Clock, scheduler pool, OpenAPI, RocketMQ producer
+```
+
+### Testing
+- Unit tests with Mockito for service, scheduler, publisher, queue
+- `@DataJpaTest` for repository (includes a concurrency test proving CAS prevents duplicate triggers)
+- `@WebMvcTest` for controller + exception handler
+- One `@SpringBootTest` end-to-end test using H2 + in-memory fakes (no Docker required)
+
+### Run locally
+See [`HELP.md`](HELP.md) for setup, curl samples, and observability endpoints.
