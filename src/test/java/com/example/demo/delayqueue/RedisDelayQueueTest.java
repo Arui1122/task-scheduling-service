@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
-import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 
 import java.time.Instant;
 import java.util.LinkedHashSet;
@@ -44,12 +43,8 @@ class RedisDelayQueueTest {
 
     @Test
     void pollDue_callsRangeByScoreAndReturnsIds() {
-        TypedTuple<String> t1 = mock(TypedTuple.class);
-        when(t1.getValue()).thenReturn("a");
-        TypedTuple<String> t2 = mock(TypedTuple.class);
-        when(t2.getValue()).thenReturn("b");
-        Set<TypedTuple<String>> result = new LinkedHashSet<>(List.of(t1, t2));
-        when(zset.rangeByScoreWithScores(eq("task:delay"), anyDouble(), anyDouble(), anyLong(), anyLong()))
+        Set<String> result = new LinkedHashSet<>(List.of("a", "b"));
+        when(zset.rangeByScore(eq("task:delay"), anyDouble(), anyDouble(), anyLong(), anyLong()))
                 .thenReturn(result);
 
         List<String> ids = queue.pollDue(Instant.parse("2030-01-01T00:00:00Z"), 10);
@@ -59,7 +54,7 @@ class RedisDelayQueueTest {
 
     @Test
     void pollDue_emptyOrNullSetReturnsEmptyList() {
-        when(zset.rangeByScoreWithScores(any(), anyDouble(), anyDouble(), anyLong(), anyLong()))
+        when(zset.rangeByScore(any(), anyDouble(), anyDouble(), anyLong(), anyLong()))
                 .thenReturn(null);
         assertThat(queue.pollDue(Instant.parse("2030-01-01T00:00:00Z"), 10)).isEmpty();
     }

@@ -1,8 +1,6 @@
 package com.example.demo.delayqueue;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -34,15 +32,8 @@ public class RedisDelayQueue implements DelayQueue {
 
     @Override
     public List<String> pollDue(Instant now, int limit) {
-        Set<ZSetOperations.TypedTuple<String>> tuples =
-                redis.opsForZSet().rangeByScoreWithScores(KEY, 0, now.toEpochMilli(), 0, limit);
-        if (tuples == null || tuples.isEmpty()) return List.of();
-        List<String> ids = new ArrayList<>(tuples.size());
-        for (ZSetOperations.TypedTuple<String> t : tuples) {
-            String v = t.getValue();
-            if (v != null) ids.add(v);
-        }
-        return ids;
+        Set<String> ids = redis.opsForZSet().rangeByScore(KEY, 0, now.toEpochMilli(), 0, limit);
+        return ids == null || ids.isEmpty() ? List.of() : new ArrayList<>(ids);
     }
 
     @Override

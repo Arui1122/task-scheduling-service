@@ -4,7 +4,6 @@ import com.example.demo.delayqueue.DelayQueue;
 import com.example.demo.model.Task;
 import com.example.demo.model.TaskMessage;
 import com.example.demo.model.TaskStatus;
-import com.example.demo.mq.MessagePublishException;
 import com.example.demo.mq.TaskMessagePublisher;
 import com.example.demo.repository.TaskRepository;
 import com.example.demo.service.exception.IllegalTaskStateException;
@@ -12,6 +11,7 @@ import com.example.demo.service.exception.TaskAlreadyExistsException;
 import com.example.demo.service.exception.TaskNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,27 +28,29 @@ import java.util.Optional;
 public class TaskService {
 
     private static final Logger log = LoggerFactory.getLogger(TaskService.class);
-    private static final Duration CREATE_GRACE = Duration.ofSeconds(5);
 
     private final TaskRepository repo;
     private final DelayQueue delayQueue;
     private final TaskMessagePublisher publisher;
     private final Clock clock;
+    private final Duration createGrace;
 
     public TaskService(TaskRepository repo,
                        DelayQueue delayQueue,
                        TaskMessagePublisher publisher,
-                       Clock clock) {
+                       Clock clock,
+                       @Value("${scheduler.create-grace-seconds}") long createGraceSeconds) {
         this.repo = repo;
         this.delayQueue = delayQueue;
         this.publisher = publisher;
         this.clock = clock;
+        this.createGrace = Duration.ofSeconds(createGraceSeconds);
     }
 
     @Transactional
     public Task create(String taskId, Instant executeAt, Map<String, Object> payload) {
         Instant now = clock.instant();
-        if (executeAt.isBefore(now.minus(CREATE_GRACE))) {
+        if (executeAt.isBefore(now.minus(this.createGrace))) {
             throw new IllegalTaskStateException("executeAt is in the past beyond the grace window");
         }
         if (repo.existsById(taskId)) {

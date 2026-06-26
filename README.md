@@ -181,12 +181,12 @@ At-least-once. The CAS succeeds, then MQ is published. If the publish fails the 
 ### Module layout
 ```
 com.example.demo
-├── domain/         Task entity, TaskStatus, TaskMessage
+├── model/          Task entity, TaskStatus, TaskMessage
 ├── repository/     Spring Data JPA + CAS @Modifying queries
 ├── delayqueue/     DelayQueue interface + RedisDelayQueue impl
 ├── mq/             TaskMessagePublisher interface + RocketMQ impl
 ├── service/        TaskService + TaskTriggerScheduler
-├── web/            TaskController + GlobalExceptionHandler + DTOs
+├── controller/     TaskController + GlobalExceptionHandler + DTOs
 └── config/         Clock, scheduler pool, OpenAPI, RocketMQ producer
 ```
 

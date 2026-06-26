@@ -2,7 +2,6 @@ package com.example.demo.delayqueue;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -12,7 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Thread-safe in-memory fake used by service tests and the integration
- * test. Not for production use; sorted by (executeAt, taskId) only.
+ * test. Not for production use; sorted by executeAt only (ties preserve insertion order).
  */
 public class InMemoryDelayQueue implements DelayQueue {
 
@@ -29,7 +28,10 @@ public class InMemoryDelayQueue implements DelayQueue {
             Long previous = reverse.put(taskId, score);
             if (previous != null) {
                 List<String> bucket = byTime.get(previous);
-                if (bucket != null) bucket.remove(taskId);
+                if (bucket != null) {
+                    bucket.remove(taskId);
+                    if (bucket.isEmpty()) byTime.remove(previous);
+                }
             }
             byTime.computeIfAbsent(score, k -> new CopyOnWriteArrayList<>()).add(taskId);
         } finally {

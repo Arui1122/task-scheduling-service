@@ -3,7 +3,6 @@ package com.example.demo.service;
 import com.example.demo.delayqueue.DelayQueue;
 import com.example.demo.delayqueue.InMemoryDelayQueue;
 import com.example.demo.model.Task;
-import com.example.demo.model.TaskMessage;
 import com.example.demo.model.TaskStatus;
 import com.example.demo.mq.CapturingTaskMessagePublisher;
 import com.example.demo.mq.MessagePublishException;
@@ -53,7 +52,7 @@ class TaskServiceTest {
         delayQueue = new InMemoryDelayQueue();
         publisher = new CapturingTaskMessagePublisher();
         Clock fixedClock = Clock.fixed(NOW, ZoneOffset.UTC);
-        service = new TaskService(repo, delayQueue, publisher, fixedClock);
+        service = new TaskService(repo, delayQueue, publisher, fixedClock, 5L);
     }
 
     private Task fakeStored(String id, Instant executeAt, TaskStatus status, long version) {
@@ -209,7 +208,7 @@ class TaskServiceTest {
         when(repo.markTriggered(anyString(), anyLong(), any(Instant.class))).thenReturn(1);
         TaskMessagePublisher failing = msg -> { throw new MessagePublishException("down", null); };
         TaskService failingService = new TaskService(repo, delayQueue, failing,
-                Clock.fixed(NOW, ZoneOffset.UTC));
+                Clock.fixed(NOW, ZoneOffset.UTC), 5L);
         delayQueue.add("abc", NOW.minusSeconds(1));
 
         boolean ok = failingService.tryTrigger("abc");

@@ -45,7 +45,7 @@ class RocketMQTaskMessagePublisherTest {
         Message sent = captor.getValue();
         assertThat(sent.getTopic()).isEqualTo("task-schedule-topic");
         assertThat(sent.getKeys()).isEqualTo("abc-123");
-        String body = new String(sent.getBody());
+        String body = new String(sent.getBody(), java.nio.charset.StandardCharsets.UTF_8);
         assertThat(body).contains("\"taskId\":\"abc-123\"");
         assertThat(body).contains("\"type\":\"email\"");
     }
