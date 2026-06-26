@@ -1,9 +1,46 @@
 spring:
   application:
-    name: demo
+    name: task-scheduling-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/taskdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:taskuser}
+    password: ${SPRING_DATASOURCE_PASSWORD:taskpass}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none         # init.sql is authoritative; do not let Hibernate touch the schema
+    properties:
+      hibernate.jdbc.time_zone: UTC
+      hibernate.format_sql: true
+    open-in-view: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2s
 
-# define mysql properties here
+rocketmq:
+  name-server: localhost:9876
+  producer-group: task-scheduling-producer
+  topic: task-schedule-topic
+  send-timeout-ms: 3000
 
-# define redis properties here
+scheduler:
+  main-poll-interval-ms: 1000
+  backfill-interval-ms: 30000
+  backfill-grace-seconds: 30
+  batch-size: 100
+  create-grace-seconds: 5
 
-# define rocketmq properties here
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+server:
+  port: 8080

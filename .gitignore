@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Private / candidate-only docs (specs, plans, interview cheat sheet) ###
+docs/superpowers/
+.claude/
