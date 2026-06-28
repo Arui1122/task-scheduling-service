@@ -175,6 +175,9 @@ Good luck!
 ### Architecture
 MySQL is the Source of Truth. Redis ZSet (score = `executeAt` epoch ms) is the primary delay-queue driver — the scheduler pulls due ids every second. A second `@Scheduled` loop scans MySQL every 30 s to backfill any tasks Redis lost. Both paths converge on a single CAS update — `UPDATE ... WHERE version=? AND status='PENDING'` — which guarantees only one instance publishes a given task, with no distributed lock required.
 
+### Redis: two distinct roles
+Redis is used in two ways. (1) **Delay queue** — the ZSet above. (2) **Read-through cache** — `GET /tasks/{id}` is cached via the Spring Cache abstraction (`@Cacheable`), backed by a `RedisCacheManager`. This is the polling hot-read in this domain: clients repeatedly poll a task's status until it flips to `TRIGGERED`, so the same id is read many times while the row changes at most twice. The cache stores the immutable `TaskResponse` DTO (never the JPA entity). Every state transition evicts the key — `@CacheEvict` on `cancel` and on `tryTrigger`; the latter is essential because the trigger is a `@Modifying` CAS update that bypasses Hibernate's entity lifecycle, so nothing else would invalidate the entry. A short TTL is a backstop. The pending-list endpoint is intentionally **not** cached (its result set changes on every create/trigger/cancel, so eviction cost would exceed the benefit).
+
 ### Delivery semantics
 At-least-once. The CAS succeeds, then MQ is published. If the publish fails the CAS is reverted to PENDING and the next tick retries. Consumers must dedupe by `taskId` (standard RocketMQ contract).
 
@@ -187,7 +190,7 @@ com.example.demo
 ├── mq/             TaskMessagePublisher interface + RocketMQ impl
 ├── service/        TaskService + TaskTriggerScheduler
 ├── controller/     TaskController + GlobalExceptionHandler + DTOs
-└── config/         Clock, scheduler pool, OpenAPI, RocketMQ producer
+└── config/         Clock, scheduler pool, OpenAPI, RocketMQ producer, Redis cache
 ```
 
 ### Testing

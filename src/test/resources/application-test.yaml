@@ -13,6 +13,8 @@ spring:
     redis:
       host: localhost
       port: 6379
+  cache:
+    type: simple          # in-memory ConcurrentMapCacheManager; no Redis in tests
 
 rocketmq:
   name-server: localhost:9876
