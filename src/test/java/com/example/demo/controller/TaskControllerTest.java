@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.controller.dto.TaskResponse;
 import com.example.demo.model.Task;
 import com.example.demo.model.TaskStatus;
 import com.example.demo.service.TaskService;
@@ -98,8 +99,8 @@ class TaskControllerTest {
 
     @Test
     void get_returns200() throws Exception {
-        Task fakeTask = fake("abc", TaskStatus.PENDING);
-        when(service.get("abc")).thenReturn(fakeTask);
+        TaskResponse fakeResponse = TaskResponse.from(fake("abc", TaskStatus.PENDING));
+        when(service.getTaskResponse("abc")).thenReturn(fakeResponse);
         mvc.perform(get("/tasks/abc"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.taskId").value("abc"));
@@ -107,7 +108,7 @@ class TaskControllerTest {
 
     @Test
     void get_notFound_returns404() throws Exception {
-        when(service.get("abc")).thenThrow(new TaskNotFoundException("abc"));
+        when(service.getTaskResponse("abc")).thenThrow(new TaskNotFoundException("abc"));
         mvc.perform(get("/tasks/abc")).andExpect(status().isNotFound());
     }
 

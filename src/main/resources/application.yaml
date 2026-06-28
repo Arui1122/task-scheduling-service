@@ -32,6 +32,10 @@ scheduler:
   batch-size: 100
   create-grace-seconds: 5
 
+cache:
+  task:
+    ttl-seconds: 60          # backstop TTL for the GET /tasks/{id} read-through cache
+
 management:
   endpoints:
     web:

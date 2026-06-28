@@ -49,7 +49,7 @@ public class TaskController {
 
     @GetMapping("/{taskId}")
     public TaskResponse get(@PathVariable String taskId) {
-        return TaskResponse.from(service.get(taskId));
+        return service.getTaskResponse(taskId);
     }
 
     @GetMapping
