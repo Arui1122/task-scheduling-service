@@ -2,6 +2,7 @@ package com.example.demo.config;
 
 import com.example.demo.controller.dto.TaskResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
@@ -49,13 +50,25 @@ public class CacheConfig {
      * the backstop: even if an eviction is ever missed, a stale entry can
      * only live for {@code cache.task.ttl-seconds}.
      */
+    /**
+     * ObjectMapper for cached values. Kept separate from the HTTP layer's
+     * auto-configured mapper, but deliberately matched to it: Instants are
+     * written as ISO-8601 strings (not epoch timestamps) so the cached JSON
+     * mirrors the API response and stays readable when inspecting Redis
+     * directly. Package-visible so {@code CacheConfigTest} can pin the shape.
+     */
+    static ObjectMapper cacheObjectMapper() {
+        return new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
+
     @Bean
     @Profile("!test")
     public RedisCacheManager taskCacheManager(RedisConnectionFactory connectionFactory,
                                               @Value("${cache.task.ttl-seconds:60}") long ttlSeconds) {
-        ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
         Jackson2JsonRedisSerializer<TaskResponse> valueSerializer =
-                new Jackson2JsonRedisSerializer<>(mapper, TaskResponse.class);
+                new Jackson2JsonRedisSerializer<>(cacheObjectMapper(), TaskResponse.class);
 
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofSeconds(ttlSeconds))
